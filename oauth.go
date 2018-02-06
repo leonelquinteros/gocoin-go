@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"path"
 )
 
@@ -26,6 +27,17 @@ type AccessToken struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	Scope       string `json:"scope"`
+}
+
+// apiRequest wraps the API's HTTP calls using Gocoin's conventions for unauthenticated requests.
+func apiRequest(method, url string, data interface{}) (*http.Response, error) {
+	req, err := getAPIRequest(method, url, data)
+	if err != nil {
+		return nil, err
+	}
+
+	client := &http.Client{}
+	return client.Do(req)
 }
 
 // GetAuthURL returns the OAuth URL endpoint for the client app to allow access and get a token.

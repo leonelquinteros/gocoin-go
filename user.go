@@ -29,5 +29,5 @@ type UserService struct {
 func (us *UserService) Get() (*User, error) {
 	u := new(User)
 	err := us.Do("GET", "/user", nil, u)
-	return u, nil
+	return u, err
 }

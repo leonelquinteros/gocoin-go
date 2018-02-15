@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"path"
 )
 
@@ -27,11 +28,14 @@ type AccessToken struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	Scope       string `json:"scope"`
+
+	// OAuthErrorResponse is embedded to catch error response bodies.
+	OAuthErrorResponse
 }
 
 // apiRequest wraps the API's HTTP calls using Gocoin's conventions for unauthenticated requests.
-func apiRequest(method, url string, data interface{}) (*http.Response, error) {
-	req, err := getAPIRequest(method, url, data)
+func apiRequest(method, endpoint string, data interface{}) (*http.Response, error) {
+	req, err := getAPIRequest(method, endpoint, data)
 	if err != nil {
 		return nil, err
 	}
@@ -41,10 +45,15 @@ func apiRequest(method, url string, data interface{}) (*http.Response, error) {
 }
 
 // GetAuthURL returns the OAuth URL endpoint for the client app to allow access and get a token.
-func GetAuthURL(dashboardURL, merchantID, redirectURI, state string) string {
-	url := path.Join(dashboardURL, "/auth?response_type=code&client_id=%s&redirect_uri=%s&scope=user_read&state=%s")
+func GetAuthURL(dashboardURL, merchantID, redirectURI, state string) (string, error) {
+	u, err := url.Parse(dashboardURL)
+	if err != nil {
+		return "", err
+	}
+	u.Path = path.Join(u.Path, "/auth")
+	u.RawQuery = fmt.Sprintf("response_type=code&client_id=%s&redirect_uri=%s&scope=user_read&state=%s", merchantID, redirectURI, state)
 
-	return fmt.Sprintf(url, merchantID, redirectURI, state)
+	return u.String(), nil
 }
 
 // GetAccessToken exchanges an authorization code for an access token to be used on further API calls.
@@ -57,7 +66,13 @@ func GetAccessToken(apiURL, clientID, clientSecret, authCode, redirectURI string
 		RedirectURI:  redirectURI,
 	}
 
-	resp, err := apiRequest("POST", path.Join(apiURL, "/oauth/token"), data)
+	u, err := url.Parse(apiURL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, "/oauth/token")
+
+	resp, err := apiRequest("POST", u.String(), data)
 	if err != nil {
 		return nil, err
 	}

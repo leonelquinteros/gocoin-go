@@ -14,6 +14,8 @@ type User struct {
 	UpdatedAt  time.Time `json:"updated_at"`
 	ImageURL   *string   `json:"image_url"`
 	MerchantID string    `json:"merchant_id"`
+	Confirmed  bool      `json:"confirmed,omitempty"`
+	Roles      []string  `json:"roles,omitempty"`
 
 	// ErrorResponse is embedded to catch error response bodies.
 	ErrorResponse

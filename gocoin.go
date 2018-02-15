@@ -3,8 +3,11 @@ package gocoin
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"path"
 )
 
 const (
@@ -12,7 +15,7 @@ const (
 )
 
 // getAPIRequest creates a http.Request object using Gocoin's conventions
-func getAPIRequest(method, url string, data interface{}) (*http.Request, error) {
+func getAPIRequest(method, endpoint string, data interface{}) (*http.Request, error) {
 	var (
 		req *http.Request
 		err error
@@ -25,20 +28,27 @@ func getAPIRequest(method, url string, data interface{}) (*http.Request, error) 
 			return nil, err
 		}
 
-		req, err = http.NewRequest(method, url, bytes.NewBuffer(body))
+		req, err = http.NewRequest(method, endpoint, bytes.NewBuffer(body))
 		if err != nil {
 			return nil, err
 		}
 	} else {
 		// Create empty body request
-		req, err = http.NewRequest(method, url, nil)
+		req, err = http.NewRequest(method, endpoint, nil)
 		if err != nil {
 			return nil, err
 		}
 	}
 
+	// Add headers
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Cache-Control", "no-cache")
+
+	u, err := url.Parse(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Host", u.Scheme+"://"+u.Host)
 
 	return req, nil
 }
@@ -72,8 +82,13 @@ func (g *Gocoin) SetAccessToken(token string) {
 }
 
 // APIRequest makes low level Gocoin API requests using object's configuration
-func (g *Gocoin) APIRequest(method, url string, data interface{}) (*http.Response, error) {
-	req, err := getAPIRequest(method, url, data)
+func (g *Gocoin) APIRequest(method, endpoint string, data interface{}) (*http.Response, error) {
+	u, err := url.Parse(g.apiURL)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = path.Join(u.Path, endpoint)
+	req, err := getAPIRequest(method, u.String(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +101,8 @@ func (g *Gocoin) APIRequest(method, url string, data interface{}) (*http.Respons
 }
 
 // Do performs an API request and unmarshal the response body into the provided object pointer
-func (g *Gocoin) Do(method, url string, data, response interface{}) error {
-	resp, err := g.APIRequest(method, url, data)
+func (g *Gocoin) Do(method, endpoint string, data, response interface{}) error {
+	resp, err := g.APIRequest(method, endpoint, data)
 	if err != nil {
 		return err
 	}
@@ -96,7 +111,19 @@ func (g *Gocoin) Do(method, url string, data, response interface{}) error {
 		return err
 	}
 
-	return json.Unmarshal(body, response)
+	// Parse response body
+	err = json.Unmarshal(body, response)
+	if err != nil {
+		return err
+	}
+
+	// Handle HTTP OK status codes
+	switch resp.StatusCode {
+	case 200, 201, 204:
+		return nil
+	}
+
+	return fmt.Errorf("%s %s: %s", method, endpoint, resp.Status)
 }
 
 // User returns a UserService object associated to this client

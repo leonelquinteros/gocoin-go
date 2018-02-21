@@ -21,23 +21,24 @@ import (
 
 func main() {
     // Create client
-	cli := gocoin.New(os.Getenv("GOCOIN_MERCHANT_ID"), os.Getenv("GOCOIN_ACCESS_TOKEN"))
+    cli := gocoin.New(os.Getenv("GOCOIN_MERCHANT_ID"), os.Getenv("GOCOIN_ACCESS_TOKEN"))
 
-	// Create invoice data
-	data := gocoin.CreateInvoice{
-		PriceCurrency:     "LTC",
-		BasePrice:         "10.32",
-		BasePriceCurrency: "USD",
-		CallbackURL:       "https://testgocoin.com/callback",
-	}
+    // Create invoice data
+    data := gocoin.CreateInvoice{
+        PriceCurrency:     "LTC",
+        BasePrice:         "10.32",
+        BasePriceCurrency: "USD",
+        CallbackURL:       "https://testgocoin.com/callback",
+    }
 
-	invoice, err := cli.Invoices().Create(data)
-	if err != nil {
-		panic(err)
+    invoice, err := cli.Invoices().Create(data)
+    if err != nil {
+        panic(err)
     }
     
     fmt.Printf("Invoice generated: \n%v", invoice)
 }
+
 ```
 
 ## Testing

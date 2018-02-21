@@ -7,22 +7,37 @@ import (
 
 // CreateInvoice is the data expected by InvoicesService.Create() method
 type CreateInvoice struct {
-	PriceCurrency     string `json:"price_currency,omitempty"`
-	BasePrice         string `json:"base_price"`
-	BasePriceCurrency string `json:"base_price_currency"`
-	Type              string `json:"type,omitempty"`
-	CallbackURL       string `json:"callback_url,omitempty"`
-	RedirectURL       string `json:"redirect_url,omitempty"`
-	OrderID           string `json:"order_id,omitempty"`
-	RefundAddress     string `json:"refund_address,omitempty"`
-	ItemName          string `json:"item_name,omitempty"`
-	ItemSKU           string `json:"item_sku,omitempty"`
-	ItemDescription   string `json:"item_description,omitempty"`
-	CustomerX         string `json:"customer_x,omitempty"`
-	UserDefinedX      string `json:"user_defined_x,omitempty"`
-	Data              string `json:"data,omitempty"`
-	CustomerContact   string `json:"customer_contact,omitempty"`
-	SendToCustomer    string `json:"send_to_customer,omitempty"`
+	PriceCurrency      string  `json:"price_currency,omitempty"`
+	BasePrice          string  `json:"base_price"`
+	BasePriceCurrency  string  `json:"base_price_currency"`
+	Type               string  `json:"type,omitempty"`
+	CallbackURL        string  `json:"callback_url,omitempty"`
+	RedirectURL        string  `json:"redirect_url,omitempty"`
+	OrderID            string  `json:"order_id,omitempty"`
+	RefundAddress      string  `json:"refund_address,omitempty"`
+	ItemName           string  `json:"item_name,omitempty"`
+	ItemSKU            string  `json:"item_sku,omitempty"`
+	ItemDescription    string  `json:"item_description,omitempty"`
+	CustomerName       *string `json:"customer_name,omitempty"`
+	CustomerAddress1   *string `json:"customer_address_1,omitempty"`
+	CustomerAddress2   *string `json:"customer_address_2,omitempty"`
+	CustomerCity       *string `json:"customer_city,omitempty"`
+	CustomerRegion     *string `json:"customer_region,omitempty"`
+	CustomerCountry    *string `json:"customer_country,omitempty"`
+	CustomerPostalCode *string `json:"customer_postal_code,omitempty"`
+	CustomerEmail      *string `json:"customer_email,omitempty"`
+	CustomerPhone      *string `json:"customer_phone,omitempty"`
+	UserDefined1       *string `json:"user_defined_1,omitempty"`
+	UserDefined2       *string `json:"user_defined_2,omitempty"`
+	UserDefined3       *string `json:"user_defined_3,omitempty"`
+	UserDefined4       *string `json:"user_defined_4,omitempty"`
+	UserDefined5       *string `json:"user_defined_5,omitempty"`
+	UserDefined6       *string `json:"user_defined_6,omitempty"`
+	UserDefined7       *string `json:"user_defined_7,omitempty"`
+	UserDefined8       *string `json:"user_defined_8,omitempty"`
+	Data               string  `json:"data,omitempty"`
+	CustomerContact    string  `json:"customer_contact,omitempty"`
+	SendToCustomer     string  `json:"send_to_customer,omitempty"`
 }
 
 // Invoice data

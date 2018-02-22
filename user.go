@@ -12,7 +12,7 @@ type User struct {
 	LastName   string    `json:"last_name"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
-	ImageURL   *string   `json:"image_url"`
+	ImageURL   string    `json:"image_url"`
 	MerchantID string    `json:"merchant_id"`
 	Confirmed  bool      `json:"confirmed,omitempty"`
 	Roles      []string  `json:"roles,omitempty"`
